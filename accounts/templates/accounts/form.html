@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+{% load static %}
+	<link rel="shortcut icon" href="{% static 'img/poli.jpg' %}" type="image/x-icon">
+	<link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+{% block content %}
+    {% if is_update %}
+	<section>
+		<h1 align="center"  height="430px" width="100%" style="color:#fff">Editar Usuarios</h1>
+	</section>
+    <form action="{% url 'accounts:update' user_id %}" method="POST">
+    {% else %}
+	<section>
+		<h1 align="center"  height="430px" width="100%" style="color:#fff">Crear un Usuario</h1>
+	</section>
+    <form action="{% url 'accounts:create' %}" method="POST">
+    {% endif %}
+    {% csrf_token %}
+        {{ form.as_p }}
+        {% if is_update %}
+        <input type="submit" value="Editar usuario">
+        {% else %}
+        <input type="submit"  class="btn btn-success btn-lg" value="Crear usuario" >
+        {% endif %}
+    </form>
+
+{% endblock content %}
+
+{% block scripts %}
+    <script>
+        const module = () => {
+            const defaultPassword = 'defaultPassword1234';
+
+            const isUpdateAction = window.location.pathname.split('/').some(element => element === 'update');
+
+            const $dropdown = document.querySelector('#id_is_supervisor');
+            const $isStaffInput = document.querySelector('#id_is_staff');
+            const $firstNameInput = document.querySelector('#id_first_name');
+            const $lastNameInput = document.querySelector('#id_last_name');
+            const $isStaffElem = document.querySelector('#id_is_staff').parentNode;
+            $isStaffElem.style.display = 'none';
+            let $passwordInput;
+            let $passwordElem;
+            let $usernameInput;
+
+            if (isUpdateAction) {
+                const $optionSupervisor = document.querySelector('option[value="true"]');
+                const $optionTechnician = document.querySelector('option[value="false"]');
+                if ($isStaffInput.checked) {
+                    $optionSupervisor.selected = true;
+                } else {
+                    $optionTechnician.selected = true;
+                }
+            }
+
+            if (!isUpdateAction) {
+                $passwordInput = document.querySelector('#id_password');
+                $passwordElem = document.querySelector('#id_password').parentNode;
+                $usernameInput = document.querySelector('#id_username');
+                $passwordElem.style.display = 'none';
+            };
+
+            $dropdown.addEventListener('change', (event) => {
+                if (event.target.value === 'true') {
+                    $isStaffInput.checked = true;
+
+                    if (!isUpdateAction) {
+                        $passwordElem.style.display = 'block';
+                        $passwordInput.value = '';
+                    }
+                } else {
+                    $isStaffInput.checked = false;
+
+                    if (!isUpdateAction) {
+                        $passwordElem.style.display = 'none';
+                        $passwordInput.value = defaultPassword;
+                    };
+                };
+            });
+
+            if (!isUpdateAction) {
+                const sanitizeNames = (name) => name.toLowerCase().replace(' ', '_');
+                const setUsernameValue = (event) => {
+                    $usernameInput.value = `${sanitizeNames($firstNameInput.value)}_${sanitizeNames($lastNameInput.value)}`;
+                };
+                $firstNameInput.addEventListener('change', event => setUsernameValue(event));
+                $lastNameInput.addEventListener('change', event => setUsernameValue(event));
+            };
+        };
+        module();
+    </script>
+{% endblock scripts %}
+	

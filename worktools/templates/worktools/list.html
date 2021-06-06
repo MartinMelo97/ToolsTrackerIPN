@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+	<header>
+			<section>
+				<h1 align="center"  height="430px" width="100%" style="color:rgb(12, 12, 12)">Lista de Herramientas</h1>
+			</section>
+			
+			{% if tools|length > 0 %}
+				<ul>
+					{% for tool in tools %}
+						<a href="{% url 'worktools:detail' tool.id %}">
+							<li class="blockquote" style="color:rgb(12, 12, 12)">{{ tool.name }} ({% if tool.is_in_maintain %}EN MANTENIMIENTO{% else %}DISPONIBLE{% endif %})</li>
+						</a>
+					{% endfor %}
+				</ul>
+			{% else %}
+				<p>No hay herramientas registradas</p>
+			{% endif %}
+			
+	</header>
+
+
+{% endblock content %}

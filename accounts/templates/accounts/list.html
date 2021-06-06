@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	{% load static %}
+	<link rel="shortcut icon" href="{% static 'img/poli.jpg' %}" type="image/x-icon">
+	<link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+
+{% block content %}
+	<header>
+			<section>
+				<h1 align="center"  height="430px" width="100%" style="color:#fff">Lista de Usuarios</h1>
+			</section>
+		<h3 align="left"  height="430px" width="100%" style="">Supervisores</h3>
+		{% if supervisors|length > 0 %}
+			<ul>
+			{% for supervisor in supervisors %}
+				<a href="{% url 'accounts:detail' supervisor.id %}">
+					<li style="">{{ supervisor.first_name }} {{ supervisor.last_name }}</li>
+				</a>
+			{% endfor %}
+			</ul>
+		{% else %}
+			<p>No hay usuarios supervisores registrados</p>
+		{% endif %}
+		<br>
+		<hr>
+		<br>
+		<h3 align="left"  height="430px" width="100%" style="">Técnicos</h3>
+		{% if technicians|length > 0 %}
+			<ul>
+			{% for technician in technicians %}
+				<a href="{% url 'accounts:detail' technician.id %}">
+					<li style="">{{ technician.first_name }} {{ technician.last_name }}</li>
+				</a>
+			{% endfor %}
+			<ul>
+		{% else %}
+			<p>No hay usuarios técnicos registrados</p>
+		{% endif %}
+	</header>
+	<footer>
+		<div>
+			<div >
+				<h4 height="430px" width="100%" style="color:#fff">Trabajo Terminal II </h4>
+			</div>
+
+		</div>
+		<h2 height="430px" width="100%" style="color:#fff">&copy; Instituto Politécnico Nacional</h2>
+	</footer>
+
+{% endblock content %}

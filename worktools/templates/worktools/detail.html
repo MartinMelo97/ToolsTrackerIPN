@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<header>
+			<section>
+				<h1 align="center"  height="430px" width="100%" style="color:rgb(10, 10, 10)">Herramienta {{ tool.name }}</h1>
+			</section>
+			
+			<form action="{% url 'worktools:delete' %}" method="POST" style="visibility: hidden">
+				{% csrf_token %}
+				<input type="hidden" name="id" value="{{ tool.id }}">
+				<input type="submit" value="" id="send-form-delete">
+			</form>
+			<br>
+			<hr>
+			<br>
+			<ul>
+				<li class="blockquote"> Número de serie: <b> {{ tool.serial_number }} </b></li>
+				<li class="blockquote"> Modelo: <b> {{ tool.model }} </b></li>
+				<li class="blockquote">último mantenimiento: <b> {{ tool.mainteance_date|default_if_none:"No necesita mantenimiento por el momento" }} </b></li>
+				<li class="blockquote"> ¿Está en mantenimiento?:<b> {% if tool.is_in_maintain %}Si{% else %}No{% endif %} </b></li>
+				<li class="blockquote">Especificaciones: <b> {{ tool.specifications|default_if_none:"N/A" }}</b></li>
+				<li class="blockquote"> ¿Tiene Rastreador?:<b> {% if tool.has_tracker %}Si{% else %}No{% endif %} </b></li>
+				{% if tool.has_tracker %}
+					<li>Identificador del rastreador: {{ tool.tracker_id|default_if_none:"No especificado" }}</li>
+				{% endif %}
+			</ul>
+			<div class="d-grid gap-2 d-md-flex ">
+				<form action="{% url 'worktools:update' tool.id %}">
+					<input class="btn btn-primary" type="submit" value="Editar Herramienta" />
+				</form>
+				
+				<button class="btn btn-primary" id="delete-user">Eliminar Herramienta</button>
+			</div>
+			
+	</header>
+{% endblock content %}
+{% block scripts %}
+    <script>
+        const module = () => {
+			const $deleteButton = document.querySelector('#delete-user');
+			const $sendFormButton = document.querySelector('#send-form-delete');
+			$deleteButton.addEventListener('click', () => { 
+				if (window.confirm('¿Estás seguro de querer eliminar esta herramienta?')){
+					$sendFormButton.click();
+				}
+			})
+
+		}   
+        module();
+    </script>
+{% endblock scripts %}

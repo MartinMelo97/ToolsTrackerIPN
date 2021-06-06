@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{{ user.first_name }} {{ user.last_name }}</h1>
+    <hr>
+    <p><b>Nombre de Usuario:</b> {{ user.username }}</p>
+    <p><b>Correo Electrónico:</b> {{ user.email }}</p>
+    <p><b>Número telefónico:</b> {{ user.phone_number }}</p>
+    <p><b>Puesto:</b> {{ user.job_title }}</p>
+    <p><b>Descanso:</b> {{ user.rest_time }}</p>
+    <p><b>Tipo de Usuario:</b> {% if user.is_staff %}Supervisor{% else %}Técnico{% endif %}</p>
+    <hr>
+    <a href="{% url 'accounts:update' user.id %}"><button>Editar Usuario</button></a>
+    <button id="delete-user">Eliminar Usuario</button>
+    <form action="{% url 'accounts:delete'%}" method="POST" style="visibility: hidden">
+        {% csrf_token %}
+        <input type="hidden" name="id" value={{ user.id }}>
+        <input type="submit" value="" id="send-form-delete">
+    </form>
+{% endblock content %}
+
+{% block scripts %}
+    <script>
+        const module = () => {
+            const $deleteButton = document.querySelector('#delete-user');
+            const $sendFormButton = document.querySelector('#send-form-delete');
+            $deleteButton.addEventListener('click', () => {
+                if (window.confirm('¿Estás seguro de querer eliminar este usuario?')) {
+                    $sendFormButton.click();
+                }
+            })
+        }
+        module();
+    </script>
+{% endblock scripts %}

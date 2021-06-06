@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <header>
+        {% if is_update %}
+            <h1 align="center"  height="430px" width="100%" style="color:rgb(0, 0, 0)">Actualiza datos de la herramienta {{ worktool.name }}</h1>
+        {% else %}
+
+            <h1 align="center"  height="430px" width="100%" style="color:rgb(8, 8, 8)">Agregar una herramienta </h1>
+        {% endif %}
+
+
+        {% if is_update %}
+            <form action="{% url 'worktools:update' worktool.id %}" method="POST">
+        {% else %}
+            <form action="{% url 'worktools:create' %}" method="POST">   
+        {% endif %}
+        <div class="form-group">
+            {% csrf_token %}
+            {{ form.as_p }}
+            {% if is_update %}
+                <input type="submit"  class="btn btn-primary" value="Editar Herramienta">
+            {% else %}
+                <input type="submit"  class="btn btn-primary" value="Crear Herramienta">  
+            {% endif %}
+            </form>
+        </div>
+    </header> 
+
+{% endblock content %}
+
+{% block scripts %}
+    <script>
+        const module = () => {
+
+            const isUpdateAction = window.location.pathname.split('/').some(element => element === 'update');
+
+            const $hasBeenMaintainedInput = document.querySelector('#id_has_been_in_mainteance');
+            const $mainteanceDateElem = document.querySelector('#id_mainteance_date_day').parentNode;
+            const $hasTrackerInput = document.querySelector('#id_has_tracker');
+            const $trackerIdInput = document.querySelector('#id_tracker_id');
+            const $trackerIdContainer = $trackerIdInput.parentNode;
+
+            if (isUpdateAction){
+                if ($hasBeenMaintainedInput.checked){
+                    $mainteanceDateElem.style.display = 'block';
+                } else {
+                    $mainteanceDateElem.style.display = 'none';
+                }
+
+                if ($hasTrackerInput.checked){
+                    $trackerIdContainer.style.display = 'block';
+                } else{
+                    $trackerIdContainer.style.display = 'none';
+                }
+            } else {
+                $trackerIdContainer.style.display = 'none';
+                $mainteanceDateElem.style.display = 'none';
+            }
+            $hasTrackerInput.addEventListener('change', () => {
+                if ($hasTrackerInput.checked){
+                    $trackerIdContainer.style.display = 'block';
+                } else {
+                    $trackerIdContainer.style.display = 'none';
+                    $trackerIdInput.value = '' ;
+                }
+            } );
+            $hasBeenMaintainedInput.addEventListener('change',() => {
+                if ($hasBeenMaintainedInput.checked){
+                    $mainteanceDateElem.style.display = 'block';
+                } else {
+                    $mainteanceDateElem.style.display = 'none';
+                }
+            })
+        }    
+        module();
+    </script>
+{% endblock scripts %}
+	

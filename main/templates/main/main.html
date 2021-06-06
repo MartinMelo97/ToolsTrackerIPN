@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale = 1">
+		<meta http-equiv="X-UA-Compatible"content="ie=edge">
+		<title>Menu Principal</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+		{% load static %}
+		<link rel="shortcut icon" href="{% static 'img/poli.jpg' %}" type="image/x-icon">
+		<link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+	</head>
+	<header>
+		<section>
+			<h1 align="center"  height="430px" width="100%" style="color:#fff">Sistema gestor y de monitoreo de herramientas</h1>
+		</section>
+		<div>
+			<ul>
+				<li><a href="/accounts/create/"><button type="submit" class="btn btn-success btn-lg">Alta de Usuario</button></a></li>
+				<li><a href="/accounts/"><button type="submit" class="btn btn-success btn-lg">Lista de usuarios</button></a></li>
+				<li><a href="/worktools/create/"><button type="submit" class="btn btn-success btn-lg">Alta de herramienta</button></a></li>
+				<li><a href="/worktools/"><button type="submit" class="btn btn-success btn-lg">Lista de herramientas</button></a></li>
+			</ul>
+			{% comment %} <a href="">
+				<button type="submit" class="btn btn-success btn-lg">Asignar Herramienta</button>
+			</a>
+			<a href="">
+				<button type="submit" class="btn btn-success btn-lg">Desvincular Herramienta</button>
+			</a>
+			<a href="">
+				<button type="submit" class="btn btn-success btn-lg">Rastrear herramienta</button>
+			</a> {% endcomment %}
+	    </div>
+	</header>
+	<footer>
+		<div>
+			<div>
+				<h4 height="430px" width="100%" style="color:#fff">Trabajo Terminal II </h4>
+			</div>
+		</div>
+		<h2 height="430px" width="100%" style="color:#fff">&copy; Instituto Politécnico Nacional</h2>
+	</footer>
+<body>
+</body>
+</html>
