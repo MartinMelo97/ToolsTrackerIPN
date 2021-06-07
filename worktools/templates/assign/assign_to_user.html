@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Asignación de herramientas a usuarios</h1>
+
+    <div class="first-step">
+        <h3>Paso 1</h3>
+        <p>Selecciona un usuario al que se le asignarán herramientas</p>
+
+        <label for="filterUser">Filtrar por nombre</label>
+        <input type="text" id="filterUser" placeholder="Nombre de usuario">
+        <br>
+        <select name="selectUser" id="selectUser" size="10">
+            {% for user in users %}
+                <option class="optionUserValue" value="{{ user.id }}">{{ user.first_name}} {{ user.last_name }} ({{ user.username }})</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="second-step">
+        <h3>Paso 2</h3>
+        <p>Selecciona las herramientas</p>
+
+        <label for="filterTool">Filtrar por nombre</label>
+        <input type="text" id="filterTools" placeholder="Nombre de la herramienta">
+        <br>
+
+        <div id="checkboxes-container">
+        {% for tool in available_tools %}
+            <div class="tool-item">
+                <input type="checkbox" class="checkboxToolValue" data-name="{{ tool.name }}" name="toolsSelected" id="tool_{{ tool.id }}" value="{{ tool.id }}">
+                <span>{{ tool.name }}</span>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+
+    <form action="{% url 'worktools:assign' %}" method="POST" id="assign_form" style="display: none">
+        {% csrf_token %}
+        <input type="hidden" name="user_id", id="user_id_input">
+        <input type="hidden" name="tools_id", id="tools_id_input">
+        <input type="submit" value="" id="send-form-assign">
+    </form>
+
+    <button class="btn btn-primary" id="assign-tools">Finalizar asignación</button>
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+    <script>
+        const module = () => {
+
+            /* ----- Variables declaraction ----- */
+            const users = []
+            let selectedUser = null
+
+            const tools = []
+            let selectedTools = []
+            /* ---------------------------------- */
+
+            const $selectUser = document.querySelector('#selectUser')
+            const $optionUsers = document.querySelectorAll('.optionUserValue')
+            const $filterUser = document.querySelector('#filterUser')
+
+            const $checkboxesTool = document.querySelectorAll('.checkboxToolValue')
+            const $filterTools = document.querySelector('#filterTools')
+            const $checkboxesContainer = document.querySelector('#checkboxes-container')
+
+            const $secondStepContainer = document.querySelector('.second-step')
+
+            const $clickableButton = document.querySelector('#assign-tools')
+            const $submitFormAction = document.querySelector('#send-form-assign')
+            const $userIdInput = document.querySelector('#user_id_input')
+            const $toolsIdInput = document.querySelector('#tools_id_input')
+
+            /* ----- Start Initial configurations ----- */
+            $secondStepContainer.style.display = 'none'
+            $clickableButton.style.display = 'none'
+
+            for (optionUser of $optionUsers) {
+                users.push({ name: optionUser.text, value: optionUser.value })
+            }
+
+            for (checkboxTool of $checkboxesTool) {
+                tools.push({ name: checkboxTool.dataset.name, value: checkboxTool.value })
+            }
+            /* ----- End Initial configurations ----- */
+
+            const getMatchingItems = (array, key, currentValue) => {
+                return array.filter(item => item[key].toLowerCase().startsWith(currentValue.toLowerCase()))
+            }
+
+
+            $filterUser.addEventListener('keyup', () => {
+                const currentValue = $filterUser.value
+                const matchUsers = getMatchingItems(users, 'name', currentValue)
+                const concatOptionStr = ''
+                $selectUser.options.length = 0 // Cleaning options
+                matchUsers.forEach(matchUser => {
+                    const option = document.createElement('option')
+                    option.value = matchUser.value
+                    option.innerHTML = matchUser.name
+                    if (selectedUser && selectedUser.value === option.value)
+                        option.selected = true
+                    $selectUser.appendChild(option)
+                })
+            });
+
+            $filterTools.addEventListener('keyup', () => {
+                const currentValue = $filterTools.value
+                const matchTools = getMatchingItems(tools, 'name', currentValue)
+
+                const matchToolsId = matchTools.map(matchTool => matchTool.value)
+
+                Array.from($checkboxesTool).forEach($checkboxTool => {
+                    if (!matchToolsId.includes($checkboxTool.value)) {
+                        $checkboxTool.parentNode.style.display = 'none'
+                    } else {
+                        $checkboxTool.parentNode.style.display = 'block'
+                    }
+                })
+            })
+
+
+            $selectUser.addEventListener('change', (event) => {
+                selectedUser = users.find(user => user.value === event.target.value)
+                $secondStepContainer.style.display = 'block'
+            });
+
+            $checkboxesTool.forEach(($checkboxTool) => {
+                $checkboxTool.addEventListener('change', () => {
+                    selectedTools = Array.from($checkboxesTool)
+                    .filter(checkboxTool => checkboxTool.checked)
+                    .map(checkboxTool => checkboxTool.value)
+                    if (selectedTools.length > 0) {
+                        $clickableButton.style.display = 'block'
+                    } else {
+                        $clickableButton.style.display = 'none'
+                    }
+                })
+            })
+
+            $clickableButton.addEventListener('click', () => {
+                if (!selectedUser || selectedTools.length === 0) {
+                    alert('No se ha seleccionado usuario o herramientas')
+                    return
+                }
+                if (window.confirm('¿El usuario y herramientas seleccionadas son correctos?')) {
+                    $userIdInput.value = selectedUser.value
+                    $toolsIdInput.value = selectedTools.join(',')
+                    $submitFormAction.click()
+                }
+            })
+
+        }
+        module()
+    </script>
+
+{% endblock scripts %}

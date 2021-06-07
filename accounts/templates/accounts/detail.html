@@ -10,6 +10,21 @@
     <p><b>Descanso:</b> {{ user.rest_time }}</p>
     <p><b>Tipo de Usuario:</b> {% if user.is_staff %}Supervisor{% else %}Técnico{% endif %}</p>
     <hr>
+    <br>
+    <h4>Herramientas asignadas</h4>
+    {% if user.tools.all|length > 0 %}
+        <ul>
+            {% for tool in user.tools.all %}
+                <a href={% url 'worktools:detail' tool.id %}>
+                    <li>{{ tool.name }}</li>
+                </a>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No hay ninguna herramienta asignada a este usuario</p>
+    {% endif %}
+
+    <hr>
     <a href="{% url 'accounts:update' user.id %}"><button>Editar Usuario</button></a>
     <button id="delete-user">Eliminar Usuario</button>
     <form action="{% url 'accounts:delete'%}" method="POST" style="visibility: hidden">

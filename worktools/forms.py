@@ -22,7 +22,6 @@ class ToolForm(forms.ModelForm):
     has_tracker = forms.BooleanField(label='Cuenta con rastreador', required=False)
     tracker_id=forms.CharField(label='ID del rastreador', required=False)
     tracker_id.widget.attrs.update({'class': 'form-control'})
-    
 
     class Meta:
         model = WorkTool

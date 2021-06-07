@@ -70,4 +70,3 @@ def DeleteUser(request):
     user = WorkerUser.objects.get(id=request.POST['id'])
     user.delete()
     return redirect('accounts:list')
-    
