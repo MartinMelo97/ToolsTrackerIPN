@@ -2,7 +2,7 @@ from django import forms, views
 from django.shortcuts import render, redirect
 from .models import WorkTool
 from .forms import ToolForm
-from .utils import tools_form_validations
+from .utils import tools_form_validations, remove_tools_by_id_list
 
 from accounts.models import WorkerUser
 
@@ -109,6 +109,37 @@ class AssignTool(views.View):
 
         for tool in tools:
             tool.user_id = user
+            tool.save()
+
+        return redirect('accounts:detail', user.id)
+
+class UnassignTools(views.View):
+    template_name = 'assign/unassign_to_user.html'
+
+    def get(self, request, id):
+        user = WorkerUser.objects.get(id=id)
+        context = {
+            'user': user
+        }
+        return render(request, self.template_name, context)
+
+    def post (self, request, id):
+        user = WorkerUser.objects.get(id=id)
+        new_tools_id = request.POST.get('tools_id')
+
+        actual_tools_id = []
+
+        for actual_tool in user.tools.all():
+            actual_tools_id.append(actual_tool.id)
+
+        new_tools = list(map(int, new_tools_id))
+
+        removed_tools_id = remove_tools_by_id_list(actual_tools_id, new_tools)
+
+        removed_tools = WorkTool.objects.filter(id__in=removed_tools_id)
+
+        for tool in removed_tools:
+            tool.user_id = None
             tool.save()
 
         return redirect('accounts:detail', user.id)

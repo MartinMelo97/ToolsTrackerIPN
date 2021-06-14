@@ -5,7 +5,6 @@
 			<section>
 				<h1 align="center"  height="430px" width="100%" style="color:rgb(10, 10, 10)">Herramienta {{ tool.name }}</h1>
 			</section>
-			
 			<form action="{% url 'worktools:delete' %}" method="POST" style="visibility: hidden">
 				{% csrf_token %}
 				<input type="hidden" name="id" value="{{ tool.id }}">
@@ -29,10 +28,8 @@
 				<form action="{% url 'worktools:update' tool.id %}">
 					<input class="btn btn-primary" type="submit" value="Editar Herramienta" />
 				</form>
-				
 				<button class="btn btn-primary" id="delete-user">Eliminar Herramienta</button>
 			</div>
-			
 	</header>
 {% endblock content %}
 {% block scripts %}
@@ -46,7 +43,7 @@
 				}
 			})
 
-		}   
+		}
         module();
     </script>
 {% endblock scripts %}

@@ -23,6 +23,7 @@
     {% else %}
         <p>No hay ninguna herramienta asignada a este usuario</p>
     {% endif %}
+    <a href="{% url 'worktools:unassign' user.id %}"><button>Desasignar herramientas</button></a>
 
     <hr>
     <a href="{% url 'accounts:update' user.id %}"><button>Editar Usuario</button></a>

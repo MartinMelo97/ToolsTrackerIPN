@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1 align="center"  height="430px" width="100%" style="color:rgb(0, 0, 0)">Desasignar herramientas</h1>
+    <br>
+    <div class="user-container">
+        <h3>Datos del usuario</h3>
+        <p>Nombre: <b>{{ user.first_name }}</b></p>
+        <p>Apellidos: <b>{{ user.last_name }}</b></p>
+        <p>Correo Electrónico: <b>{{ user.email }}</b></p>
+    </div>
+
+    <div class="tools-container">
+        <h3>Herramientas asignadas</h3>
+        {% if user.tools.all|length > 0 %}
+            <label for="filterTools" class="h5">Filtrar por nombre:</label>
+            <input type="text" id="filterTools" placeholder="Nombre de la herramienta" class="form-control">
+            <div id="checkboxes-container">
+                {% for tool in user.tools.all %}
+                    <div>
+                        <input type="checkbox" checked class="checkboxToolValue" data-name="{{ tool.name }}" name="toolsSelected" id="tool_{{ tool.id }}" value="{{ tool.id }}">
+                        <span class="h6">{{ tool.name }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No hay herramientas asignadas a este usuario</p>
+        {% endif %}
+    </div>
+
+    <form action="{% url 'worktools:unassign' user.id %}" method="POST" id="assign_form" style="display: none">
+        {% csrf_token %}
+        <input type="hidden" name="user_id" id="user_id_input">
+        <input type="hidden" name="tools_id" id="tools_id_input">
+        <input type="submit" value="" id="send-form-unassign">
+    </form>
+    <br>
+    <button class="btn btn-primary" id="unassign-tools">Finalizar desasignación</button>
+{% endblock content %}
+
+{% block scripts %}
+
+    <script>
+        const module = () => {
+
+            /* ----- Variables declaraction ----- */
+            const tools = []
+            let selectedTools = []
+            /* ---------------------------------- */
+            const $checkboxesTool = document.querySelectorAll('.checkboxToolValue')
+            const $filterTools = document.querySelector('#filterTools')
+            const $checkboxesContainer = document.querySelector('#checkboxes-container')
+
+            const $clickableButton = document.querySelector('#unassign-tools')
+            const $submitFormAction = document.querySelector('#send-form-unassign')
+            const $userIdInput = document.querySelector('#user_id_input')
+            const $toolsIdInput = document.querySelector('#tools_id_input')
+
+            /* ----- Start Initial configurations ----- */
+            for (checkboxTool of $checkboxesTool) {
+                tools.push({ name: checkboxTool.dataset.name, value: checkboxTool.value })
+            }
+            /* ----- End Initial configurations ----- */
+
+            const getMatchingItems = (array, key, currentValue) => {
+                return array.filter(item => item[key].toLowerCase().startsWith(currentValue.toLowerCase()))
+            }
+
+            $filterTools.addEventListener('keyup', () => {
+                const currentValue = $filterTools.value
+                const matchTools = getMatchingItems(tools, 'name', currentValue)
+
+                const matchToolsId = matchTools.map(matchTool => matchTool.value)
+
+                Array.from($checkboxesTool).forEach($checkboxTool => {
+                    if (!matchToolsId.includes($checkboxTool.value)) {
+                        $checkboxTool.parentNode.style.display = 'none'
+                    } else {
+                        $checkboxTool.parentNode.style.display = 'block'
+                    }
+                })
+            })
+
+            $checkboxesTool.forEach(($checkboxTool) => {
+                $checkboxTool.addEventListener('change', () => {
+                    selectedTools = Array.from($checkboxesTool)
+                    .filter(checkboxTool => checkboxTool.checked)
+                    .map(checkboxTool => checkboxTool.value)
+                    if (selectedTools.length > 0) {
+                        $clickableButton.style.display = 'block'
+                    } else {
+                        $clickableButton.style.display = 'none'
+                    }
+                })
+            })
+
+            $clickableButton.addEventListener('click', () => {
+                if (window.confirm('Las herramientas desasignadas son correctas?')) {
+                    $toolsIdInput.value = selectedTools.join(',')
+                    $submitFormAction.click()
+                }
+            })
+
+        }
+        module()
+    </script>
+{% endblock scripts %}

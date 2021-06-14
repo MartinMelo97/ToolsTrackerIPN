@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import  ListTool, DetailTool, DeleteTool, CreateTool, UpdateTool, AssignTool
+from .views import  ListTool, DetailTool, DeleteTool, CreateTool, UpdateTool, AssignTool, UnassignTools
 
 app_name = 'worktools'
 
@@ -12,5 +12,6 @@ urlpatterns = [
     path('delete/', DeleteTool, name='delete'),
 
     # Assign users routes
-    path('assign/', AssignTool.as_view(), name='assign')
+    path('assign/', AssignTool.as_view(), name='assign'),
+    path('unassign/<int:id>', UnassignTools.as_view(), name='unassign')
 ]
